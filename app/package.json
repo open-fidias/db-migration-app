@@ -1,0 +1,19 @@
+{
+  "name": "db-migration-app",
+  "productName": "db-migration-app",
+  "version": "0.0.1",
+  "description": "Desktop app to migrate databases based on SQL files",
+  "homepage": "https://github.com/open-fidias/db-migration-app",
+  "main": "./dist/main.js",
+  "dependencies": {
+    "bulma": "^0.4.1",
+    "electron-settings": "^2.2.2",
+    "vue": "^2.1.10",
+    "vue-electron": "^1.0.6",
+    "vue-router": "^2.1.2",
+    "vuex": "^2.1.1"
+  },
+  "devDependencies": {},
+  "author": "Átila Camurça <camurca.home@gmail.com>",
+  "license": "GPL-3.0"
+}
