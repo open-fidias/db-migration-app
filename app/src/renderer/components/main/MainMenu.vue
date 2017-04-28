@@ -19,7 +19,13 @@
         <div>
             <slot></slot>
         </div>
-        <versions></versions>
+        <footer class="footer">
+            <div class="container">
+                <div class="content has-text-centered">
+                    <versions></versions>
+                </div>
+            </div>
+        </footer>
     </div>
 </template>
 

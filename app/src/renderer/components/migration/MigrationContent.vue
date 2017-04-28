@@ -1,12 +1,20 @@
 <template lang="html">
-    <div class="">
-        <h3>Migrations</h3>
+    <div>
+        <migration-folder></migration-folder>
+        <migration-list></migration-list>
     </div>
 </template>
 
 <script>
+import MigrationFolder from 'components/migration/MigrationFolder'
+import MigrationList from 'components/migration/MigrationList'
+
 export default {
-    name: 'migration-content'
+    name: 'migration-content',
+    components: {
+        MigrationFolder,
+        MigrationList
+    }
 }
 </script>
 
