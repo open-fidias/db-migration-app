@@ -43,12 +43,13 @@ function createWindow () {
     })
 
     settings.defaults({
-        driver: {
-            postgresql: {
-                hostname: 'localhost',
+        connection: {
+            params: {
+                driver: 'postgresql',
+                host: 'localhost',
                 port: 5432,
                 database: 'postgres',
-                username: 'postgres'
+                user: 'postgres'
             }
         }
     })
