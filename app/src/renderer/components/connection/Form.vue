@@ -70,24 +70,26 @@
         <div class="notification is-info" v-if="database.version">
             Database Version: {{ database.version }}
         </div>
-        <div class="notification is-danger" v-show="error.isVisible">
-            <button class="delete"
-                @click.prevent="error.isVisible = false"></button>
-            {{ error.message }}
-        </div>
+        <notification :message="notification.message"
+            :isVisible="notification.isVisible"
+            :modifier="notification.modifier"
+            @close="notification.isVisible = false"
+        ></notification>
     </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import ConnectionStatus from 'components/connection/ConnectionStatus'
+import Notification from 'components/main/Notification'
 import settings from 'electron-settings'
 import { connect, disconnect } from '../../database.js'
 
 export default {
     name: 'connection-form',
     components: {
-        ConnectionStatus
+        ConnectionStatus,
+        Notification
     },
     data () {
         return {
@@ -103,9 +105,10 @@ export default {
                 version: null,
                 isConnecting: false
             },
-            error: {
-                message: null,
-                isVisible: false
+            notification: {
+                message: '',
+                isVisible: false,
+                modifier: ''
             }
         }
     },
@@ -113,6 +116,7 @@ export default {
         settings.get('connection.params')
             .then(values => {
                 this.form = values
+                this.form.password = this.getConnectionParams.password
             })
     },
     methods: {
@@ -132,34 +136,43 @@ export default {
                 .then((connection) => {
                     this.setConnectionStatus(connection.isConnected)
                     connection.instance.query('SELECT version()', (err, result) => {
-                        if (err) return console.error('query:', err)
+                        if (err) {
+                            return this.showErrorMessage(err)
+                        }
                         this.database.version = result.rows[0].version
                         this.database.isConnecting = false
-                        this.error.isVisible = false
+                        this.notification.isVisible = false
                     })
                 })
                 .catch((err) => {
-                    this.error.message = `${err.severity} - ${err.message} [${err.code}]`
-                    this.error.isVisible = true
+                    this.showErrorMessage(err)
                     this.database.isConnecting = false
                 })
         },
         saveConnectionParams () {
-            settings.set('connection.params', {
+            const aux = {
                 driver: this.form.driver,
                 host: this.form.host,
                 port: this.form.port,
                 database: this.form.database,
                 user: this.form.user
-            })
-            this.setConnectionParams(this.form)
+            }
+            settings.set('connection.params', aux)
+
+            aux.password = this.form.password
+            this.setConnectionParams(aux)
+        },
+        showErrorMessage (err) {
+            this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+            this.notification.isVisible = true
+            this.notification.modifier = 'is-danger'
         }
     },
-    beforeDestroy () {
-        disconnect()
-            .then(() => {
-                this.setConnectionStatus(false)
-            })
+    computed: {
+        ...mapGetters([
+            'getMigrationsFolder',
+            'getConnectionParams'
+        ])
     }
 }
 </script>

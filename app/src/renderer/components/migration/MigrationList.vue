@@ -5,11 +5,18 @@
                 <h3 class="title is-3">Migrations</h3>
             </div>
             <div class="column">
-                <button class="button is-primary is-pulled-right">
+                <button class="button is-primary is-pulled-right"
+                    :disabled="disabled">
                     Migrate
                 </button>
             </div>
         </div>
+
+        <notification :message="notification.message"
+            :isVisible="notification.isVisible"
+            :modifier="notification.modifier"
+            @close="notification.isVisible = false"
+        ></notification>
 
         <table class="table table is-striped has-margin-top">
             <thead>
@@ -21,17 +28,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><strong>1</strong></td>
-                    <td>Alter table user with new column token</td>
-                    <td>2017-04-28 10:12:09</td>
-                    <td>82b392f3594050ecefd768bfe258843b</td>
-                </tr>
-                <tr>
-                    <td><strong>2</strong></td>
-                    <td>Alter table user with new column token_expires</td>
-                    <td>2017-04-28 12:12:09</td>
-                    <td>82b392f3594050ecefd768bfe258843b</td>
+                <tr v-for="item in list">
+                    <td><strong>{{ item.level }}</strong></td>
+                    <td>{{ item.comment }}</td>
+                    <td :title="item.timestamp">
+                        {{ item.timestamp | fromNow }}
+                    </td>
+                    <td>{{ item.checksum }}</td>
                 </tr>
             </tbody>
         </table>
@@ -39,8 +42,65 @@
 </template>
 
 <script>
+import { connect } from '../../database.js'
+import { mapGetters } from 'vuex'
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
+import Notification from 'components/main/Notification'
+
 export default {
-    name: 'migration-list'
+    name: 'migration-list',
+    components: {
+        Notification
+    },
+    data () {
+        return {
+            list: [],
+            notification: {
+                isVisible: false,
+                message: '',
+                modifier: ''
+            }
+        }
+    },
+    mounted () {
+        connect(this.getConnectionParams)
+            .then(this.fetchList)
+            .catch((err) => {
+                if (err) {
+                    this.showErrorMessage(err)
+                }
+            })
+    },
+    methods: {
+        fetchList (connection) {
+            const sql = 'SELECT level, comment, "timestamp", checksum FROM migrations ORDER BY "timestamp" DESC LIMIT 50'
+            connection.instance.query(sql, (err, result) => {
+                if (err) {
+                    return this.showErrorMessage(err)
+                }
+                this.list = result.rows
+            })
+        },
+        showErrorMessage (err) {
+            this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+            this.notification.isVisible = true
+            this.notification.modifier = 'is-danger'
+        }
+    },
+    computed: {
+        ...mapGetters([
+            'getMigrationsFolder',
+            'getConnectionParams'
+        ]),
+        disabled () {
+            return this.getMigrationsFolder === ''
+        }
+    },
+    filters: {
+        fromNow (value) {
+            return distanceInWordsToNow(value)
+        }
+    }
 }
 </script>
 
