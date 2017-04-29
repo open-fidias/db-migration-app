@@ -1,60 +1,27 @@
 <template lang="html">
-    <div>
-        <nav class="nav has-shadow is-inverted">
-            <div class="container">
-                <div class="nav-left">
-                    <a href="#" class="nav-item">
-                        <img src="./assets/logo.svg" alt="RP">
-                    </a>
-                    <a href="#"
-                        class="nav-item is-tab"
-                        :class="{ 'is-active': nav.isActive }"
-                        @click="selectContent(index)"
-                        v-for="(nav, index) in navs">
-                        {{nav.label}}
-                    </a>
-                </div>
+    <nav class="nav has-shadow is-inverted">
+        <div class="container">
+            <div class="nav-left">
+                <a href="#" class="nav-item">
+                    <img src="./assets/logo.svg" alt="logo">
+                </a>
+                <router-link
+                    class="nav-item is-tab"
+                    active-class="is-active"
+                    to="/connection">Connection</router-link>
+                <router-link
+                    class="nav-item is-tab"
+                    active-class="is-active"
+                    to="/migrations">Migrations</router-link>
             </div>
-        </nav>
-        <div>
-            <slot></slot>
         </div>
-        <footer class="footer">
-            <div class="container">
-                <div class="content has-text-centered">
-                    <versions></versions>
-                </div>
-            </div>
-        </footer>
-    </div>
+    </nav>
 </template>
 
 <script>
-import Versions from 'components/main/Versions'
 
 export default {
-    name: 'main-menu',
-    components: {
-        Versions
-    },
-    data () {
-        return {
-            navs: []
-        }
-    },
-    methods: {
-        selectContent (selectedNav) {
-            this.navs.forEach((nav, index) => {
-                nav.isActive = (index === selectedNav)
-            })
-        },
-        registerTab (tab) {
-            this.navs.push(tab)
-        },
-        removeTab (index) {
-            this.navs.splice(index, 1)
-        }
-    }
+    name: 'main-menu'
 }
 </script>
 

@@ -1,8 +1,8 @@
 <template lang="html">
-    <div>
+    <section class="section">
         <migration-folder></migration-folder>
         <migration-list></migration-list>
-    </div>
+    </section>
 </template>
 
 <script>

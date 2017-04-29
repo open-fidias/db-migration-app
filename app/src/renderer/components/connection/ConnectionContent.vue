@@ -1,7 +1,7 @@
 <template lang="html">
-    <div>
+    <section class="section">
         <connection-form></connection-form>
-    </div>
+    </section>
 </template>
 
 <script>
