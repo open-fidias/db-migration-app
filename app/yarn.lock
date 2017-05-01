@@ -137,19 +137,19 @@ lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-marv-pg-driver@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/marv-pg-driver/-/marv-pg-driver-1.1.0.tgz#1a0cecc1672f8c1ddef3f7233b5ed20acf427614"
+marv-pg-driver@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/marv-pg-driver/-/marv-pg-driver-1.1.1.tgz#0306c1edaf324ec15b88c6b1b6153286ec8a3279"
   dependencies:
     async "^2.0.1"
     debug "^2.2.0"
     lodash "^4.15.0"
-    marv "^1.4.0"
+    marv "^1.4.2"
     pg "^6.1.0"
 
-marv@^1.4.0, marv@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/marv/-/marv-1.4.1.tgz#2e5a9412d2fe88f8b5a7b74924e5805a65d4640e"
+marv@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/marv/-/marv-1.4.2.tgz#0d87c26378d072cfb2f08fe1c369aa9733a05e19"
   dependencies:
     async "^2.1.4"
     debug "^2.6.0"

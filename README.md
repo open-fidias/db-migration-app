@@ -23,6 +23,8 @@ sudo dpkg -i db-migration-app_x.x.x_amd64.deb
 
 Replace `x` for the version.
 
+The `exe` version is portable for Windows. Just run as a normal user.
+
 ## Development
 
 ```bash
@@ -36,6 +38,17 @@ npm run dev
 
 ```bash
 npm run build
+```
+
+## Create a release with Docker
+
+```bash
+# run container
+docker run --rm -ti -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.electron:/root/.electron electronuserland/electron-builder:wine
+# install dependencies
+yarn
+# create release for windows
+npm run build:win32
 ```
 
 ## Acknowledgment

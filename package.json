@@ -4,7 +4,7 @@
   "description": "Desktop app to migrate databases based on SQL files",
   "scripts": {
     "build": "npm run pack && build",
-    "build:win32": "npm run pack && build --win --x64",
+    "build:win32": "npm run pack && build --win --ia32",
     "build:dir": "npm run pack && build --dir",
     "dev": "node tasks/runner.js",
     "e2e": "npm run pack && mocha test/e2e",
@@ -51,9 +51,7 @@
     },
     "win": {
       "icon": "app/icons/icon.ico",
-      "target": [
-        "zip"
-      ]
+      "target": "portable"
     },
     "linux": {
       "target": [
@@ -85,7 +83,7 @@
     "del": "^2.2.1",
     "devtron": "^1.1.0",
     "electron": "^1.4.15",
-    "electron-builder": "^11.4.4",
+    "electron-builder": "^17.1.1",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.0.1",
     "electron-rebuild": "^1.1.3",
