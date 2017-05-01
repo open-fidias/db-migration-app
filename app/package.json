@@ -9,6 +9,8 @@
     "bulma": "^0.4.1",
     "date-fns": "^1.28.4",
     "electron-settings": "^2.2.2",
+    "marv": "^1.4.1",
+    "marv-pg-driver": "^1.1.0",
     "pg": "^6.1.5",
     "vue": "^2.1.10",
     "vue-electron": "^1.0.6",
