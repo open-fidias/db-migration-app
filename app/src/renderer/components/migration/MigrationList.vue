@@ -3,10 +3,15 @@
         <div class="columns has-margin-top">
             <div class="column">
                 <h3 class="title is-3">Migrations</h3>
+                <span v-show="migrations.length > 0">
+                    Total Migrations found: {{ migrations.length }}
+                </span>
             </div>
             <div class="column">
-                <button class="button is-primary is-pulled-right"
-                    :disabled="disabled">
+                <button class="button is-primary is-medium is-pulled-right"
+                    :disabled="disabled"
+                    :class="{'is-loading': isMigrating}"
+                    @click.prevent="migrate">
                     Migrate
                 </button>
             </div>
@@ -18,7 +23,7 @@
             @close="notification.isVisible = false"
         ></notification>
 
-        <table class="table table is-striped has-margin-top">
+        <table class="table table is-striped">
             <thead>
                 <tr>
                     <th>Level</th>
@@ -42,10 +47,13 @@
 </template>
 
 <script>
-import { connect } from '../../database.js'
 import { mapGetters } from 'vuex'
+import marv from 'marv'
+import driver from 'marv-pg-driver'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import Notification from 'components/main/Notification'
+import { EventBus } from 'renderer/event-bus'
+import { connect } from 'renderer/database'
 
 export default {
     name: 'migration-list',
@@ -59,19 +67,29 @@ export default {
                 isVisible: false,
                 message: '',
                 modifier: ''
-            }
+            },
+            migrations: [],
+            isMigrating: false
         }
     },
     mounted () {
-        connect(this.getConnectionParams)
-            .then(this.fetchList)
-            .catch((err) => {
-                if (err) {
-                    this.showErrorMessage(err)
-                }
-            })
+        this.renderList()
+
+        EventBus.$on('scan-migrations-folder', this.scan)
+        if (this.getMigrationsFolder) {
+            this.scan()
+        }
     },
     methods: {
+        renderList () {
+            connect(this.getConnectionParams)
+                .then(this.fetchList)
+                .catch((err) => {
+                    if (err) {
+                        this.showErrorMessage(err)
+                    }
+                })
+        },
         fetchList (connection) {
             const sql = 'SELECT level, comment, "timestamp", checksum FROM migrations ORDER BY "timestamp" DESC LIMIT 50'
             connection.instance.query(sql, (err, result) => {
@@ -81,10 +99,42 @@ export default {
                 this.list = result.rows
             })
         },
+        scan () {
+            marv.scan(this.getMigrationsFolder, (err, migrations) => {
+                if (err) {
+                    this.showErrorMessage(err)
+                }
+                this.migrations = migrations || []
+            })
+        },
+        migrate () {
+            this.isMigrating = true
+            const options = {
+                connection: this.getConnectionParams
+            }
+            marv.migrate(this.migrations, driver(options), (err) => {
+                this.isMigrating = false
+                if (err) {
+                    console.dir(err)
+                    return this.showErrorMessage(err)
+                }
+                this.showSuccessMessage('Database migration done with success.')
+                this.renderList()
+            })
+        },
         showErrorMessage (err) {
-            this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+            if (err.severity) {
+                this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+            } else {
+                this.notification.message = `${err.message}`
+            }
             this.notification.isVisible = true
             this.notification.modifier = 'is-danger'
+        },
+        showSuccessMessage (message) {
+            this.notification.message = message
+            this.notification.isVisible = true
+            this.notification.modifier = 'is-success'
         }
     },
     computed: {
@@ -100,6 +150,9 @@ export default {
         fromNow (value) {
             return distanceInWordsToNow(value)
         }
+    },
+    beforeDestroy () {
+        EventBus.$off('scan-migrations-folder')
     }
 }
 </script>

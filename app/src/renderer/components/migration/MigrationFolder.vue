@@ -8,7 +8,8 @@
                         v-model="getMigrationsFolder"/>
                 </p>
                 <p class="control">
-                    <button class="button is-info" @click.prevent="chooseFolder">
+                    <button class="button is-info"
+                        @click.prevent="chooseFolder">
                         Browse...
                     </button>
                 </p>
@@ -20,6 +21,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { remote } from 'electron'
+import { EventBus } from 'renderer/event-bus'
 
 const dialog = remote.dialog
 
@@ -33,6 +35,7 @@ export default {
             }, (filenames) => {
                 if (filenames) {
                     this.$store.commit('setMigrationsFolder', filenames[0])
+                    EventBus.$emit('scan-migrations-folder')
                 }
             })
         }

@@ -62,7 +62,7 @@
                 <connection-status></connection-status>
             </div>
             <div class="column">
-                <button class="button is-primary is-pulled-right"
+                <button class="button is-primary is-medium is-pulled-right"
                     :class="{'is-loading': database.isConnecting}"
                     @click.prevent="makeConnection">Connect</button>
             </div>

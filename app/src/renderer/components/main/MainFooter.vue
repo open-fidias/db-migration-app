@@ -3,6 +3,10 @@
         <div class="container">
             <div class="content has-text-centered">
                 <versions></versions>
+                <p>
+                    Migrations powered by
+                    <a href="https://github.com/guidesmiths/marv">marv</a>
+                </p>
             </div>
         </div>
     </footer>
