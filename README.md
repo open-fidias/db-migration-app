@@ -1,11 +1,15 @@
 # Fidias Database Migration App
 
-![logo](doc/img/logo.png)
+![logo](docs/img/logo.png)
 
 Desktop database migration app based on SQL files.
 
 It's built with [Electron](https://electron.atom.io/)
 and uses [marv](https://github.com/guidesmiths/marv) as the migration tool.
+
+## See it in action!
+
+![app-in-action](docs/img/app-in-action.gif)
 
 ## Getting Started
 
@@ -47,7 +51,9 @@ npm run build
 docker run --rm -ti -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.electron:/root/.electron electronuserland/electron-builder:wine
 # install dependencies
 yarn
-# create release for windows
+# create release for GNU/Linux
+npm run build
+# create release for Windows
 npm run build:win32
 ```
 
