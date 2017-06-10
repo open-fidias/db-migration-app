@@ -91,7 +91,8 @@ export default {
                 })
         },
         fetchList (connection) {
-            const sql = 'SELECT level, comment, "timestamp", checksum FROM migrations ORDER BY "timestamp" DESC LIMIT 50'
+            const sql = `SELECT level, comment, "timestamp", checksum
+                FROM migrations ORDER BY "timestamp" DESC LIMIT 50`
             connection.instance.query(sql, (err, result) => {
                 if (err) {
                     return this.showErrorMessage(err)
@@ -115,7 +116,6 @@ export default {
             marv.migrate(this.migrations, driver(options), (err) => {
                 this.isMigrating = false
                 if (err) {
-                    console.dir(err)
                     return this.showErrorMessage(err)
                 }
                 this.showSuccessMessage('Database migration done with success.')
@@ -124,7 +124,8 @@ export default {
         },
         showErrorMessage (err) {
             if (err.severity) {
-                this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+                this.notification.message = `${err.severity} - ${err.message} [${err.code}]
+<br><br>Error on migration: ${err.migration.comment} [LEVEL ${err.migration.level}]`
             } else {
                 this.notification.message = `${err.message}`
             }
