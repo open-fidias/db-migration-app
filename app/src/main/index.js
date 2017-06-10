@@ -51,6 +51,9 @@ function createWindow () {
                 database: 'postgres',
                 user: 'postgres'
             }
+        },
+        migrations: {
+            folder: ''
         }
     })
     settings.applyDefaults()

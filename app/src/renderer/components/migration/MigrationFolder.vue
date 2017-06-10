@@ -22,11 +22,18 @@
 import { mapGetters } from 'vuex'
 import { remote } from 'electron'
 import { EventBus } from 'renderer/event-bus'
+import settings from 'electron-settings'
 
 const dialog = remote.dialog
 
 export default {
     name: 'migration-folder',
+    mounted () {
+        settings.get('migrations.folder')
+            .then(folder => {
+                this.setupMigrationFolder(folder)
+            })
+    },
     methods: {
         chooseFolder () {
             dialog.showOpenDialog({
@@ -34,10 +41,13 @@ export default {
                 properties: ['openDirectory']
             }, (filenames) => {
                 if (filenames) {
-                    this.$store.commit('setMigrationsFolder', filenames[0])
+                    this.setupMigrationFolder(filenames[0])
                     EventBus.$emit('scan-migrations-folder')
                 }
             })
+        },
+        setupMigrationFolder (folder) {
+            this.$store.dispatch('setMigrationsFolder', folder)
         }
     },
     computed: {

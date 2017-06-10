@@ -124,8 +124,10 @@ export default {
         },
         showErrorMessage (err) {
             if (err.severity) {
-                this.notification.message = `${err.severity} - ${err.message} [${err.code}]
-<br><br>Error on migration: ${err.migration.comment} [LEVEL ${err.migration.level}]`
+                this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
+                if (err.migration) {
+                    this.notification.message += `<br><br>Error on migration: ${err.migration.comment} [LEVEL ${err.migration.level}]`
+                }
             } else {
                 this.notification.message = `${err.message}`
             }

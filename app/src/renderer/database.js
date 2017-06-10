@@ -18,7 +18,6 @@ export const connect = (params) => {
                 resetConnection()
                 return reject(err)
             }
-            console.log('db connected')
             connection.isConnected = true
             return resolve(connection)
         })
@@ -29,7 +28,6 @@ export const disconnect = () => {
     return new Promise((resolve, reject) => {
         if (connection.instance) {
             connection.instance.end((err) => {
-                console.log('db disconnected')
                 resetConnection()
                 if (err) {
                     reject(err)

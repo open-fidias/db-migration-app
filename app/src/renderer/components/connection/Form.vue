@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import ConnectionStatus from 'components/connection/ConnectionStatus'
 import Notification from 'components/main/Notification'
 import settings from 'electron-settings'
@@ -121,11 +121,13 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'setConnectionStatus',
+            'setConnectionStatus'
+        ]),
+        ...mapActions([
             'setConnectionParams'
         ]),
         makeConnection () {
-            this.saveConnectionParams(this.form)
+            this.setConnectionParams(this.form)
             disconnect()
                 .then(() => {
                     this.database.version = null
@@ -148,19 +150,6 @@ export default {
                     this.showErrorMessage(err)
                     this.database.isConnecting = false
                 })
-        },
-        saveConnectionParams () {
-            const aux = {
-                driver: this.form.driver,
-                host: this.form.host,
-                port: this.form.port,
-                database: this.form.database,
-                user: this.form.user
-            }
-            settings.set('connection.params', aux)
-
-            aux.password = this.form.password
-            this.setConnectionParams(aux)
         },
         showErrorMessage (err) {
             this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
