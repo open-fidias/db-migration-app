@@ -3,7 +3,7 @@
         :class="[modifier]">
         <button class="delete"
             @click.prevent="$emit('close')"></button>
-        {{ message }}
+        <div v-html="message"></div>
     </div>
 </template>
 
