@@ -42,12 +42,12 @@ export default {
             }, (filenames) => {
                 if (filenames) {
                     this.setupMigrationFolder(filenames[0])
-                    EventBus.$emit('scan-migrations-folder')
                 }
             })
         },
         setupMigrationFolder (folder) {
             this.$store.dispatch('setMigrationsFolder', folder)
+            EventBus.$emit('scan-migrations-folder')
         }
     },
     computed: {
