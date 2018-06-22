@@ -92,7 +92,7 @@ export default {
         },
         fetchList (connection) {
             const sql = `SELECT level, comment, "timestamp", checksum
-                FROM migrations ORDER BY "timestamp" DESC LIMIT 50`
+                FROM migrations ORDER BY level DESC LIMIT 50`
             connection.instance.query(sql, (err, result) => {
                 if (err) {
                     return this.showErrorMessage(err)

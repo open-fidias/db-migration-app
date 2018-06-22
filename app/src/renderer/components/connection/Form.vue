@@ -59,7 +59,11 @@
 
         <div class="columns">
             <div class="column">
-                <connection-status></connection-status>
+                <label class="checkbox">
+                    <input type="checkbox"
+                    v-model="goToMigrationsAfterConnect">
+                    Go to Migrations after Connect
+                </label>
             </div>
             <div class="column">
                 <button class="button is-primary is-medium is-pulled-right"
@@ -80,7 +84,6 @@
 
 <script>
 import { mapMutations, mapGetters, mapActions } from 'vuex'
-import ConnectionStatus from 'components/connection/ConnectionStatus'
 import Notification from 'components/main/Notification'
 import settings from 'electron-settings'
 import { connect, disconnect } from '../../database.js'
@@ -88,7 +91,6 @@ import { connect, disconnect } from '../../database.js'
 export default {
     name: 'connection-form',
     components: {
-        ConnectionStatus,
         Notification
     },
     data () {
@@ -109,41 +111,45 @@ export default {
                 message: '',
                 isVisible: false,
                 modifier: ''
-            }
+            },
+            goToMigrationsAfterConnect: false
         }
     },
     mounted () {
-        settings.get('connection.params')
-            .then(values => {
-                this.form = values
-                this.form.password = this.getConnectionParams.password
-            })
+        this.setDefaultConnectionParams(settings.get('connection.params'))
+        this.goToMigrationsAfterConnect = settings.get('preferences.goToMigrationsAfterConnect', true)
     },
     methods: {
         ...mapMutations([
-            'setConnectionStatus'
+            'setConnectionStatus',
+            'setPostgresqlVersion'
         ]),
         ...mapActions([
             'setConnectionParams'
         ]),
         makeConnection () {
             this.setConnectionParams(this.form)
+            this.setPostgresqlVersion(null)
             disconnect()
                 .then(() => {
                     this.database.version = null
-                    this.setConnectionStatus(false)
+                    this.setConnectionStatus('is_connecting')
                     this.database.isConnecting = true
                     return connect(this.form)
                 })
                 .then((connection) => {
-                    this.setConnectionStatus(connection.isConnected)
-                    connection.instance.query('SELECT version()', (err, result) => {
+                    this.setConnectionStatus(connection.isConnected ? 'connected' : 'disconnected')
+                    connection.instance.query('show server_version', (err, result) => {
                         if (err) {
                             return this.showErrorMessage(err)
                         }
-                        this.database.version = result.rows[0].version
+                        this.database.version = result.rows[0].server_version
+                        this.setPostgresqlVersion(this.database.version)
                         this.database.isConnecting = false
                         this.notification.isVisible = false
+                        if (this.goToMigrationsAfterConnect) {
+                            this.$router.push({name: 'migrations'})
+                        }
                     })
                 })
                 .catch((err) => {
@@ -155,6 +161,10 @@ export default {
             this.notification.message = `${err.severity} - ${err.message} [${err.code}]`
             this.notification.isVisible = true
             this.notification.modifier = 'is-danger'
+        },
+        setDefaultConnectionParams (values) {
+            this.form = values
+            this.form.password = this.getConnectionParams.password
         }
     },
     computed: {
@@ -162,9 +172,11 @@ export default {
             'getMigrationsFolder',
             'getConnectionParams'
         ])
+    },
+    watch: {
+        goToMigrationsAfterConnect (newValue) {
+            settings.set('preferences.goToMigrationsAfterConnect', newValue)
+        }
     }
 }
 </script>
-
-<style lang="css">
-</style>

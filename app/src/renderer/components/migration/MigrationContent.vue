@@ -2,6 +2,7 @@
     <section class="section">
         <migration-folder></migration-folder>
         <migration-list></migration-list>
+        <p>Showing only the last 50</p>
     </section>
 </template>
 
@@ -17,6 +18,3 @@ export default {
     }
 }
 </script>
-
-<style lang="css">
-</style>

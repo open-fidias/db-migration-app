@@ -2,9 +2,9 @@
     <nav class="nav has-shadow is-inverted">
         <div class="container">
             <div class="nav-left">
-                <a href="#" class="nav-item">
+                <router-link :to="{name: 'home-page'}" class="nav-item">
                     <img src="./assets/logo.svg" alt="logo">
-                </a>
+                </router-link>
                 <router-link
                     class="nav-item is-tab"
                     active-class="is-active"
@@ -14,14 +14,35 @@
                     active-class="is-active"
                     to="/migrations">Migrations</router-link>
             </div>
+            <div class="nav-right">
+                <div class="nav-item">
+                    <connection-status></connection-status>
+                </div>
+                <div class="nav-item">
+                    <postgresql-version v-show="isConnected"></postgresql-version>
+                </div>
+            </div>
         </div>
     </nav>
 </template>
 
 <script>
 
+import ConnectionStatus from 'components/connection/ConnectionStatus'
+import PostgresqlVersion from 'components/connection/PostgresqlVersion'
+import {mapGetters} from 'vuex'
+
 export default {
-    name: 'main-menu'
+    name: 'main-menu',
+    components: {
+        ConnectionStatus,
+        PostgresqlVersion
+    },
+    computed: {
+        ...mapGetters([
+            'isConnected'
+        ])
+    }
 }
 </script>
 

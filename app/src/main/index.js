@@ -2,9 +2,8 @@
 
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
-import settings from 'electron-settings'
 
-console.log('node electron version:', process.version)
+console.log('NodeJS (from Electron) version:', process.version)
 
 let mainWindow
 
@@ -42,24 +41,11 @@ function createWindow () {
         mainWindow = null
     })
 
-    settings.defaults({
-        connection: {
-            params: {
-                driver: 'postgresql',
-                host: 'localhost',
-                port: 5432,
-                database: 'postgres',
-                user: 'postgres'
-            }
-        },
-        migrations: {
-            folder: ''
-        }
-    })
-    settings.applyDefaults()
+    // config default settings
+    require('./settings')
 
     // eslint-disable-next-line no-console
-    console.log('mainWindow opened')
+    console.log('Main Window opened')
 }
 
 app.on('ready', createWindow)
