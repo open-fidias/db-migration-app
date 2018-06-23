@@ -1,7 +1,7 @@
 <template>
     <p v-once>
-        You are using electron v{{ versions['atom-shell'] }}
-        with node v{{ versions.node }} on the {{ platform }} platform.
+        You are using electron {{ versions['electron'] }}
+        with node {{ versions.node }} on the {{ platform }} platform.
     </p>
 </template>
 

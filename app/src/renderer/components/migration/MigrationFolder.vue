@@ -29,10 +29,7 @@ const dialog = remote.dialog
 export default {
     name: 'migration-folder',
     mounted () {
-        settings.get('migrations.folder')
-            .then(folder => {
-                this.setupMigrationFolder(folder)
-            })
+        this.setupMigrationFolder(settings.get('migrations.folder'))
     },
     methods: {
         chooseFolder () {
@@ -57,6 +54,3 @@ export default {
     }
 }
 </script>
-
-<style lang="css">
-</style>

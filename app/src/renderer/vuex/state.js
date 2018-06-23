@@ -4,7 +4,7 @@ export default {
         folder: ''
     },
     connection: {
-        isConnected: false,
+        status: 'disconnected',
         params: {
             driver: '',
             host: '',
@@ -13,5 +13,8 @@ export default {
             user: '',
             password: ''
         }
+    },
+    postgresql: {
+        version: null
     }
 }
