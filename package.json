@@ -1,6 +1,6 @@
 {
   "name": "db-migration-app",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Desktop app to migrate databases based on SQL files",
   "scripts": {
     "build": "npm run pack && build",

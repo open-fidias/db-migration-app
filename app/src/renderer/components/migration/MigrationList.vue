@@ -3,9 +3,7 @@
         <div class="columns has-margin-top">
             <div class="column">
                 <h3 class="title is-3">Migrations</h3>
-                <span v-show="migrations.length > 0">
-                    Total Migrations found: {{ migrations.length }}
-                </span>
+
             </div>
             <div class="column">
                 <button class="button is-primary is-medium is-pulled-right"
@@ -14,6 +12,18 @@
                     @click.prevent="migrate">
                     Migrate
                 </button>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <span v-show="migrations.length > 0">
+                    Total Migrations found: {{ migrations.length }}
+                </span>
+            </div>
+            <div class="column">
+                <div class="is-pulled-right">
+                    Elapsed time: {{ elapsed }}s
+                </div>
             </div>
         </div>
 
@@ -54,6 +64,7 @@ import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import Notification from 'components/main/Notification'
 import { EventBus } from 'renderer/event-bus'
 import { connect } from 'renderer/database'
+import hirestime from 'hirestime'
 
 export default {
     name: 'migration-list',
@@ -69,7 +80,8 @@ export default {
                 modifier: ''
             },
             migrations: [],
-            isMigrating: false
+            isMigrating: false,
+            elapsed: 0
         }
     },
     mounted () {
@@ -101,6 +113,7 @@ export default {
             })
         },
         scan () {
+            this.elapsed = 0
             marv.scan(this.getMigrationsFolder, (err, migrations) => {
                 if (err) {
                     this.showErrorMessage(err)
@@ -109,11 +122,13 @@ export default {
             })
         },
         migrate () {
+            const getElapsed = hirestime()
             this.isMigrating = true
             const options = {
                 connection: this.getConnectionParams
             }
             marv.migrate(this.migrations, driver(options), (err) => {
+                this.elapsed = getElapsed(hirestime.S)
                 this.isMigrating = false
                 if (err) {
                     return this.showErrorMessage(err)
