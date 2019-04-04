@@ -3,7 +3,6 @@
         <div class="columns has-margin-top">
             <div class="column">
                 <h3 class="title is-3">Migrations</h3>
-
             </div>
             <div class="column">
                 <button class="button is-primary is-medium is-pulled-right"
@@ -42,16 +41,21 @@
                     <th>Checksum</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr v-for="item in list">
-                    <td><strong>{{ item.level }}</strong></td>
-                    <td>{{ item.comment }}</td>
-                    <td :title="item.timestamp">
-                        {{ item.timestamp | fromNow }}
-                    </td>
-                    <td>{{ item.checksum }}</td>
-                </tr>
-            </tbody>
+            <component
+                v-if="databaseDriver"
+                :is="driverListComponent"
+                @error="showErrorMessage">
+                <template slot-scope="{ list }">
+                    <tr v-for="item in list">
+                        <td><strong>{{ item.level }}</strong></td>
+                        <td>{{ item.comment }}</td>
+                        <td :title="item.timestamp">
+                            {{ item.timestamp | fromNow }}
+                        </td>
+                        <td>{{ item.checksum }}</td>
+                    </tr>
+                </template>
+            </component>
         </table>
     </div>
 </template>
@@ -63,13 +67,16 @@ import driver from 'marv-pg-driver'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import Notification from 'components/main/Notification'
 import { EventBus } from 'renderer/event-bus'
-import { connect } from 'renderer/database'
 import hirestime from 'hirestime'
+import PostgresqlList from 'components/migration/PostgresqlList'
+import SqliteList from 'components/migration/SqliteList'
 
 export default {
     name: 'migration-list',
     components: {
-        Notification
+        Notification,
+        PostgresqlList,
+        SqliteList
     },
     data () {
         return {
@@ -85,33 +92,12 @@ export default {
         }
     },
     mounted () {
-        this.renderList()
-
         EventBus.$on('scan-migrations-folder', this.scan)
         if (this.getMigrationsFolder) {
             this.scan()
         }
     },
     methods: {
-        renderList () {
-            connect(this.getConnectionParams)
-                .then(this.fetchList)
-                .catch((err) => {
-                    if (err) {
-                        this.showErrorMessage(err)
-                    }
-                })
-        },
-        fetchList (connection) {
-            const sql = `SELECT level, comment, "timestamp", checksum
-                FROM migrations ORDER BY level DESC LIMIT 50`
-            connection.instance.query(sql, (err, result) => {
-                if (err) {
-                    return this.showErrorMessage(err)
-                }
-                this.list = result.rows
-            })
-        },
         scan () {
             this.elapsed = 0
             marv.scan(this.getMigrationsFolder, (err, migrations) => {
@@ -158,10 +144,14 @@ export default {
     computed: {
         ...mapGetters([
             'getMigrationsFolder',
-            'getConnectionParams'
+            'getConnectionParams',
+            'databaseDriver'
         ]),
         disabled () {
             return this.getMigrationsFolder === ''
+        },
+        driverListComponent () {
+            return `${this.databaseDriver}-list`
         }
     },
     filters: {

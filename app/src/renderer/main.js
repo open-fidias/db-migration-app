@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Electron from 'vue-electron'
 import Router from 'vue-router'
 
 import App from './App'
@@ -8,7 +7,7 @@ import store from './vuex/store'
 
 import './styles/main.sass'
 
-Vue.use(Electron)
+Vue.config.devtools = process.env.NODE_ENV !== 'production'
 Vue.use(Router)
 Vue.config.debug = true
 

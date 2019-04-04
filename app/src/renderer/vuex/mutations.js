@@ -9,7 +9,10 @@ export default {
     setConnectionParams (state, params) {
         state.connection.params = params
     },
-    setPostgresqlVersion (state, version) {
-        state.postgresql.version = version
+    setDatabaseVersion (state, version) {
+        state.database.version = version
+    },
+    SET_DATABASE_DRIVER (state, driver) {
+        state.database.driver = driver
     }
 }

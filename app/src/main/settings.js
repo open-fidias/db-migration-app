@@ -1,14 +1,20 @@
 import settings from 'electron-settings'
+import { POSTGRESQL } from '../renderer/database/driver'
 
 if (! settings.has('connection')) {
     settings.set('connection', {
         params: {
-            driver: 'postgresql',
             host: 'localhost',
             port: 5432,
             database: 'postgres',
             user: 'postgres'
         }
+    })
+}
+
+if (!settings.has('database')) {
+    settings.set('database', {
+        driver: POSTGRESQL
     })
 }
 

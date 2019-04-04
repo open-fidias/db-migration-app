@@ -6,7 +6,6 @@ export default {
     connection: {
         status: 'disconnected',
         params: {
-            driver: '',
             host: '',
             port: 0,
             database: '',
@@ -14,7 +13,8 @@ export default {
             password: ''
         }
     },
-    postgresql: {
+    database: {
+        driver: '',
         version: null
     }
 }
