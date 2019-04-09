@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="columns">
-            <div class="column is-6 is-offset-2">
+            <div class="column is-6-desktop is-offset-2-desktop is-10-tablet is-offset-1-tablet">
                 <div class="field">
                     <label for="" class="label">Path of main database</label>
                     <div class="field has-addons">
@@ -21,12 +21,12 @@
 
         <div class="attach-database">
             <div class="columns">
-                <div class="column is-4 is-offset-2">
-                    <h4 class="subtitle">Opcional</h4>
+                <div class="column is-4-desktop is-offset-2-desktop is-4-tablet is-offset-1-tablet">
+                    <h4 class="subtitle">Optional</h4>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column is-5 is-offset-2">
+            <div class="columns is-multiline">
+                <div class="column is-5-desktop is-offset-2-desktop is-10-tablet is-offset-1-tablet">
                     <div class="field">
                         <label for="" class="label">Attach database</label>
                         <div class="field has-addons">
@@ -42,11 +42,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="column is-2">
+                <div class="column is-2-desktop is-offset-0-desktop is-4-tablet is-offset-1-tablet">
                     <div class="field">
                         <label for="" class="label">As (Schema)</label>
                         <p class="control">
-                            <input class="input" v-model="dbForm.schema"/>
+                            <input class="input" v-model="dbForm.as"/>
                         </p>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
             </div>
 
             <div class="columns">
-                <div class="column is-8 is-offset-2">
+                <div class="column is-8-desktop is-offset-2-desktop is-10-tablet is-offset-1-tablet">
                     <table class="table">
                         <thead>
                             <tr>
@@ -73,10 +73,10 @@
                             <tr v-for="aux in form.databases"
                                 :key="aux.as">
                                 <td>{{ aux.path }}</td>
-                                <td>{{ aux.schema }}</td>
+                                <td>{{ aux.as }}</td>
                                 <td>
                                     <button class="delete is-medium is-pulled-right"
-                                        @click.prevent="removeDatabase(aux.schema)">
+                                        @click.prevent="removeDatabase(aux.as)">
                                     </button>
                                 </td>
                             </tr>
@@ -90,14 +90,14 @@
         </div>
 
         <div class="columns">
-            <div class="column is-4 is-offset-2">
+            <div class="column is-4-desktop is-offset-2-desktop is-5-tablet is-offset-1-tablet">
                 <label class="checkbox">
                     <input type="checkbox"
                     v-model="goToMigrationsAfterConnect">
                     Go to Migrations after Connect
                 </label>
             </div>
-            <div class="column is-4">
+            <div class="column is-4-desktop is-5-tablet">
                 <button class="button is-primary is-medium is-pulled-right"
                     :class="{'is-loading': database.isConnecting}"
                     @click.prevent="makeConnection">Connect</button>
@@ -113,12 +113,13 @@
 </template>
 
 <script>
-import { mapMutations/* , mapGetters */, mapActions } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 import Notification from 'components/main/Notification'
 import settings from 'electron-settings'
 import { remote } from 'electron'
 import { SQLITE } from 'database/driver'
 import { connect, disconnect } from 'database/sqlite'
+import path from 'path'
 
 const dialog = remote.dialog
 
@@ -135,7 +136,7 @@ export default {
             },
             dbForm: {
                 path: '',
-                schema: ''
+                as: ''
             },
             database: {
                 isConnecting: false
@@ -145,11 +146,12 @@ export default {
                 isVisible: false,
                 modifier: ''
             },
-            goToMigrationsAfterConnect: false
+            goToMigrationsAfterConnect: false,
+            defaultPath: ''
         }
     },
     mounted () {
-        this.setDefaultConnectionParams(settings.get('connection.params'))
+        this.setDefaultConnectionParams()
         this.goToMigrationsAfterConnect = settings.get('preferences.goToMigrationsAfterConnect', true)
         this.setDatabaseDriver(SQLITE)
     },
@@ -157,6 +159,7 @@ export default {
         chooseFile (cb) {
             dialog.showOpenDialog({
                 title: 'Choose SQLite Database...',
+                defaultPath: this.defaultPath,
                 properties: ['openFile'],
                 filters: [
                     {name: 'SQLite databases', extensions: ['sqlite', 'sqlite3', 'db']},
@@ -168,6 +171,7 @@ export default {
             this.chooseFile((filenames) => {
                 if (filenames) {
                     this.form.path = filenames[0]
+                    this.defaultPath = path.dirname(filenames[0])
                 }
             })
         },
@@ -175,6 +179,9 @@ export default {
             this.chooseFile((filenames) => {
                 if (filenames) {
                     this.dbForm.path = filenames[0]
+                    const props = path.parse(filenames[0])
+                    this.dbForm.as = props.name
+                    this.defaultPath = path.dirname(filenames[0])
                 }
             })
         },
@@ -198,7 +205,6 @@ export default {
                 .then((connection) => {
                     this.setConnectionStatus(connection.isConnected ? 'connected' : 'disconnected')
                     const result = connection.instance.prepare('select sqlite_version() as version;').get()
-                    console.log('version', result.version)
                     this.setDatabaseVersion(result.version)
                     this.database.isConnecting = false
                     this.notification.isVisible = false
@@ -213,19 +219,19 @@ export default {
         },
         addDatabase () {
             const path = this.dbForm.path.trim()
-            const schema = this.dbForm.schema.trim()
-            if (path && schema) {
+            const as = this.dbForm.as.trim()
+            if (path && as) {
                 this.form.databases.push({
                     path,
-                    schema
+                    as
                 })
                 this.dbForm.path = ''
-                this.dbForm.schema = ''
+                this.dbForm.as = ''
             }
         },
         removeDatabase (schema) {
             this.form.databases = this.form.databases.filter(db => {
-                return db.schema !== schema
+                return db.as !== schema
             })
         },
         showErrorMessage (err) {
@@ -233,8 +239,11 @@ export default {
             this.notification.isVisible = true
             this.notification.modifier = 'is-danger'
         },
-        setDefaultConnectionParams (values) {
-            this.form = values
+        setDefaultConnectionParams () {
+            const driver = settings.get('database.driver')
+            if (driver === SQLITE) {
+                this.form = settings.get('connection.params')
+            }
         }
     }
 }
@@ -244,5 +253,12 @@ export default {
 .attach-database {
     background-color: whitesmoke;
     margin-bottom: 16px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 4px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+}
+@media screen and (min-width: 1000px) {
+    .column.is-offset-0-desktop {
+        margin-left: 0%;
+    }
 }
 </style>

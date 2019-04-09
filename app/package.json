@@ -1,7 +1,7 @@
 {
   "name": "db-migration-app",
   "productName": "db-migration-app",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Desktop app to migrate databases based on SQL files",
   "homepage": "https://github.com/open-fidias/db-migration-app",
   "main": "./dist/main.js",

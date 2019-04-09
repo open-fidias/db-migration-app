@@ -1,5 +1,6 @@
 <template>
-    <label class="radio column is-2" @click.prevent="$emit('update-selected')">
+    <label class="radio column is-2-desktop is-3-tablet"
+        @click.prevent="$emit('update-selected')">
         <div class="card is-fullwidth"
             :class="isSelected">
             <div class="card-image">

@@ -15,13 +15,20 @@
         </div>
         <div class="columns">
             <div class="column">
-                <span v-show="migrations.length > 0">
-                    Total Migrations found: {{ migrations.length }}
+                <span v-if="migrations.length === 0">
+                    No migrations files
                 </span>
+                <span v-else-if="migrations.length === 1">
+                    <strong>One</strong> migration file
+                </span>
+                <span v-else="migrations.length > 1">
+                    <strong>{{ migrations.length }}</strong> migrations files
+                </span>
+                found in folder.
             </div>
             <div class="column">
                 <div class="is-pulled-right">
-                    Elapsed time: {{ elapsed }}s
+                    Elapsed time: <strong>{{ elapsed }}s</strong>
                 </div>
             </div>
         </div>
@@ -29,6 +36,7 @@
         <notification :message="notification.message"
             :isVisible="notification.isVisible"
             :modifier="notification.modifier"
+            :stack="notification.stack"
             @close="notification.isVisible = false"
         ></notification>
 
@@ -44,6 +52,7 @@
             <component
                 v-if="databaseDriver"
                 :is="driverListComponent"
+                :key="driverKey"
                 @error="showErrorMessage">
                 <template slot-scope="{ list }">
                     <tr v-for="item in list">
@@ -63,13 +72,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import marv from 'marv'
-import driver from 'marv-pg-driver'
+import postgresqlDriver from 'marv-pg-driver'
+import sqliteDriver from '@open-fidias/marv-better-sqlite3-driver'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import Notification from 'components/main/Notification'
 import { EventBus } from 'renderer/event-bus'
 import hirestime from 'hirestime'
 import PostgresqlList from 'components/migration/PostgresqlList'
 import SqliteList from 'components/migration/SqliteList'
+import { POSTGRESQL, SQLITE } from 'database/driver'
 
 export default {
     name: 'migration-list',
@@ -80,11 +91,12 @@ export default {
     },
     data () {
         return {
-            list: [],
+            driverKey: 0, // trigger re-render
             notification: {
                 isVisible: false,
                 message: '',
-                modifier: ''
+                modifier: '',
+                stack: ''
             },
             migrations: [],
             isMigrating: false,
@@ -108,19 +120,21 @@ export default {
             })
         },
         migrate () {
+            this.notification.isVisible = false
             const getElapsed = hirestime()
             this.isMigrating = true
             const options = {
                 connection: this.getConnectionParams
             }
-            marv.migrate(this.migrations, driver(options), (err) => {
+            marv.migrate(this.migrations, this.currentDriver(options), (err) => {
                 this.elapsed = getElapsed(hirestime.S)
                 this.isMigrating = false
                 if (err) {
+                    console.log(err)
                     return this.showErrorMessage(err)
                 }
                 this.showSuccessMessage('Database migration done with success.')
-                this.renderList()
+                this.driverKey++
             })
         },
         showErrorMessage (err) {
@@ -132,6 +146,7 @@ export default {
             } else {
                 this.notification.message = `${err.message}`
             }
+            this.notification.stack = `${err.stack}`
             this.notification.isVisible = true
             this.notification.modifier = 'is-danger'
         },
@@ -152,6 +167,16 @@ export default {
         },
         driverListComponent () {
             return `${this.databaseDriver}-list`
+        },
+        currentDriver () {
+            switch (this.databaseDriver) {
+            case POSTGRESQL:
+                return postgresqlDriver
+            case SQLITE:
+                return sqliteDriver
+            default:
+                break
+            }
         }
     },
     filters: {

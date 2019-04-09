@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# This file is supposed to be used inside the docker container
 
 # install dependencies
 yarn
