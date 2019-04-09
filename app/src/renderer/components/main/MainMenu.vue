@@ -19,7 +19,7 @@
                     <connection-status></connection-status>
                 </div>
                 <div class="nav-item">
-                    <postgresql-version v-show="isConnected"></postgresql-version>
+                    <database-version v-show="isConnected"></database-version>
                 </div>
             </div>
         </div>
@@ -29,14 +29,14 @@
 <script>
 
 import ConnectionStatus from 'components/connection/ConnectionStatus'
-import PostgresqlVersion from 'components/connection/PostgresqlVersion'
+import DatabaseVersion from 'components/connection/DatabaseVersion'
 import {mapGetters} from 'vuex'
 
 export default {
     name: 'main-menu',
     components: {
         ConnectionStatus,
-        PostgresqlVersion
+        DatabaseVersion
     },
     computed: {
         ...mapGetters([

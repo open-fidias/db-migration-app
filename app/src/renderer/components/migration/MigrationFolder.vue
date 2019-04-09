@@ -1,6 +1,6 @@
 <template lang="html">
     <div class="columns">
-        <div class="column">
+        <div class="column is-10 is-offset-1">
             <label for="" class="label">Choose Migration folder</label>
             <div class="field has-addons">
                 <p class="control is-expanded">

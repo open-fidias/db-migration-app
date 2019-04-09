@@ -47,22 +47,31 @@ npm run build
 ## Create a release with Docker
 
 ```bash
-# run container
-docker run --rm -ti -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.electron:/root/.electron electronuserland/electron-builder:wine
-# install dependencies
-yarn
-# create release for GNU/Linux
-npm run build
-# create release for Windows
-npm run build:win32
+./scripts/run-docker-builder.sh
 ```
 
 ## Acknowledgment
 
 This project was generated from [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about this project can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
 
-* [Electron](https://electron.atom.io/) - Build cross platform desktop apps
-with JavaScript, HTML, and CSS.
-* [marv](https://github.com/guidesmiths/marv) - Marv is a programmatic database migration tool with plugable drivers for MySQL and PostgreSQL.
-* [Bulma](http://bulma.io/) - A modern CSS framework based on Flexbox.
+* [marv](https://github.com/guidesmiths/marv) - Marv is a programmatic database migration tool with plugable drivers for MySQL, SQLite and PostgreSQL.
+* [Electron](https://electron.atom.io/) - Build cross platform desktop apps with JavaScript, HTML, and CSS.
 * [VueJS](https://vuejs.org) - A progressive framework for building user interfaces.
+* [Bulma](http://bulma.io/) - A modern CSS framework based on Flexbox.
+
+## Troubleshooting
+
+If the following error occurs:
+
+```
+symbol lookup error: ~/db-migration-app/app/node_modules/better-sqlite3/build/better_sqlite3.node: undefined symbol: _ZN2v86String9Utf8ValueC1EPNS_7IsolateENS_5LocalINS_5ValueEEE
+```
+
+Run these commands:
+
+```bash
+cd app
+npx electron-rebuild -v 2.0.18
+```
+
+Use the `-v` option to specify the electron version.

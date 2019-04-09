@@ -1,3 +1,4 @@
+import { POSTGRESQL, SQLITE } from 'database/driver'
 
 const connection = {
     status: {
@@ -28,7 +29,21 @@ export default {
     connectionStatusStyle (state) {
         return connection.style[state.connection.status]
     },
-    postgresqlVersion (state) {
-        return state.postgresql.version
+    databaseVersion (state) {
+        return state.database.version
+    },
+    databaseName (state) {
+        const { driver } = state.database
+        switch (driver) {
+        case POSTGRESQL:
+            return 'PostgreSQL'
+        case SQLITE:
+            return 'SQLite'
+        default:
+            return 'Unknow'
+        }
+    },
+    databaseDriver (state) {
+        return state.database.driver
     }
 }
