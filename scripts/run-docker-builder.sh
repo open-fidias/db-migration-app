@@ -8,4 +8,5 @@ docker run --rm \
     electronuserland/electron-builder:wine \
     ./scripts/build-with-docker.sh
 
-sudo chown -R ${USER}:${USER} dist/
+echo 'Changing permissions of /dist and app/node_modules ... '
+sudo chown -R ${USER}:${USER} dist/ app/node_modules
