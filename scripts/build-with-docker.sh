@@ -4,7 +4,9 @@
 
 # install dependencies
 yarn
+# rebuild native modules
+cd app
+npx electron-rebuild --version 2.0.18
+cd -
 # create release for GNU/Linux
 npm run build
-# create release for Windows
-npm run build:win32

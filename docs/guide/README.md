@@ -1,17 +1,17 @@
-# DB Migration App
+---
+sidebar: auto
+---
 
-![logo](docs/img/logo.png)
+# Introduction
 
-Desktop database migration app based on SQL files.
+DB Migration App is a Desktop database migration app based on SQL files.
 
 It's built with [Electron](https://electron.atom.io/)
 and uses [marv](https://github.com/guidesmiths/marv) as the migration tool.
 
-## See it in action!
+![app-in-action](../img/app-in-action.gif)
 
-![app-in-action](docs/img/app-in-action.gif)
-
-## Getting Started
+## Installation
 
 To install the app go to [Releases Page](https://github.com/open-fidias/db-migration-app/releases)
 and download the app for your system.
@@ -29,9 +29,30 @@ Replace `x` with the actual version.
 
 The `exe` version is portable for Windows. Just run as a normal user.
 
-## Documentation
+The Mac version requires MacOS and currently we're not able to build it.
 
-<https://open-fidias.github.io/db-migration-app>
+## How does it work?
+
+You can start configuring the database connection. Example connection to PostgreSQL:
+
+![app-2](../img/app-2.png)
+
+After click the button `Connect`, you can select your migration directory. The directory
+must contain only `.sql` files, such as:
+
+```
+└── migrations/
+    ├── 001.create-table.sql
+    └── 002.create-another-table.sql
+```
+
+Filenames must be in the form `<level><separator><comment>.sql` where:
+
+- `level` must be numeric
+- `separator` can be any non numeric
+- `comment` can contain any characters except `.` (dot)
+
+![app-3](../img/app-3.png)
 
 ## Acknowledgment
 
